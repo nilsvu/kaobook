@@ -24,11 +24,13 @@
 % Choose the default options, which will be overwritten by the options 
 % passed to this package.
 \PassOptionsToPackage{
-	%style=numeric-comp,
+	% style=numeric-comp,
+	style=phys,biblabel=brackets,pageranges=false,chaptertitle=false,articletitle=true,
+	eprint=true,%url=true,doi=true,
 	%citestyle=authortitle-icomp,
-	citestyle=numeric-comp,
+	% citestyle=numeric-comp,
 	%bibstyle=authoryear,
-	bibstyle=numeric,
+	% bibstyle=numeric,
 	sorting=none,
 	%sorting=nyt,
 	%sortcites=true,
@@ -36,12 +38,17 @@
 	backend=biber, % Compile the bibliography with biber
 	hyperref=true,
 	backref=true,
+	backrefstyle=three,
 	citecounter=true,
 	pagetracker=true,
 	citetracker=true,
 	ibidtracker=context,
 	autopunct=true,
 	autocite=plain,
+	labeldateparts=true,
+	giveninits=true,
+	maxbibnames=3,
+	maxcitenames=3,
 }{biblatex}
 
 % Pass the unknown options to biblatex, overwriting the previous settings. Avoid passing the kao-specific options.
@@ -62,10 +69,10 @@
 \AtEveryBibitem{
 	\clearfield{issn}
 	\clearfield{isbn}
-	\clearfield{archivePrefix}
+	% \clearfield{archivePrefix}
 	\clearfield{arxivId}
 	\clearfield{pmid}
-	\clearfield{eprint}
+	% \clearfield{eprint}
 	\ifentrytype{online}{}{\ifentrytype{misc}{}{\clearfield{url}}}
 	\ifentrytype{book}{\clearfield{doi}}{}
 }
@@ -172,9 +179,9 @@
 % Second optional argument: postnote if the third argument isn't specified; prenote if the third argument is specified (same pattern as the \textcite command)
 % Third optional argument: postnote
 % Mandatory argument: citation key
-\NewDocumentCommand{\sidecite}{o o o m}{%
+\NewDocumentCommand{\sidecite}{s o o o m}{%
 	\RenewDocumentCommand{\kaobiblio@marginnote}{m}{%
-		\marginnote[#1]{##1}%
+		\marginnote[#2]{##1}%
 	}%
 	\DeclareCiteCommand{\kaobiblio@sidecite}[\kaobiblio@marginnote]{%
 	}{%
@@ -184,14 +191,14 @@
 	}{%
 	}%
 	% With this we print the marker in the text and add the item to the bibliography at the end
-	\IfNoValueOrEmptyTF{#2}%
-	{\def\@tempa{\cite{#4}\kaobiblio@sidecite{#4}}}%
-	{\IfNoValueOrEmptyTF{#3}%
-		{\IfNoValueTF{#3}%
-			{\def\@tempa{\cite[#2]{#4}\kaobiblio@sidecite{#4}}}%
-			{\def\@tempa{\cite[#2][]{#4}\kaobook@sidecite{#4}}}% postnote is empty, so pass empty postnote
+	\IfNoValueOrEmptyTF{#3}%
+	{\def\@tempa{\IfBooleanF{#1}{\cite{#5}}\kaobiblio@sidecite{#5}}}%
+	{\IfNoValueOrEmptyTF{#4}%
+		{\IfNoValueTF{#4}%
+			{\def\@tempa{\IfBooleanF{#1}{\cite[#3]{#5}}\kaobiblio@sidecite{#5}}}%
+			{\def\@tempa{\IfBooleanF{#1}{\cite[#3][]{#5}}\kaobook@sidecite{#5}}}% postnote is empty, so pass empty postnote
 		}%
-		{\def\@tempa{\cite[#2][#3]{#4}\kaobiblio@sidecite{#4}}}%
+		{\def\@tempa{\IfBooleanF{#1}{\cite[#3][#4]{#5}}\kaobiblio@sidecite{#5}}}%
 	}%
 	\ifkaobiblio@addspace%
 		\unskip~\@tempa%
@@ -412,12 +419,12 @@
 \DeclareCiteCommand{\fullcite}{%
 	\defcounter{maxnames}{99}%
 	\usebibmacro{prenote}}
-	{\clearfield{url}%
-	\clearfield{pages}%
-	\clearfield{pagetotal}%
-	\clearfield{edition}%
-	\clearfield{issn}%
-	\clearfield{doi}%
+	{%\clearfield{url}%
+	% \clearfield{pages}%
+	% \clearfield{pagetotal}%
+	% \clearfield{edition}%
+	% \clearfield{issn}%
+	% \clearfield{doi}%
 	\usedriver
 	{\DeclareNameAlias{sortname}{default}}
 	{\thefield{entrytype}}
